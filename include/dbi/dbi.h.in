@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * $Id: dbi.h.in,v 1.13 2012/12/03 00:13:30 mhoenicka Exp $
+ * $Id: dbi.h.in,v 1.14 2013/04/18 23:55:40 mhoenicka Exp $
  */
 
 #ifndef __DBI_H__
@@ -40,6 +40,11 @@ extern "C" {
 #else
 #define LIBDBI_API_DEPRECATED /**/
 #endif
+#endif
+
+/* hide the __attribute__ magic from non-GNU C compilers */
+#ifndef __GNUC__
+#define __attribute__(_arg_)
 #endif
 
 /* opaque type definitions */
@@ -215,7 +220,7 @@ void dbi_conn_close(dbi_conn Conn);
 int dbi_conn_error(dbi_conn Conn, const char **errmsg_dest);
 void dbi_conn_error_handler(dbi_conn Conn, dbi_conn_error_handler_func function, void *user_argument);
 dbi_error_flag LIBDBI_API_DEPRECATED dbi_conn_error_flag(dbi_conn Conn);
-int dbi_conn_set_error(dbi_conn Conn, int errnum, const char *formatstr, ...);
+int dbi_conn_set_error(dbi_conn Conn, int errnum, const char *formatstr, ...) __attribute__ ((format (printf, 3, 4)));
 
 int dbi_conn_connect(dbi_conn Conn);
 int dbi_conn_get_socket(dbi_conn Conn);
@@ -225,7 +230,7 @@ const char *dbi_conn_get_encoding(dbi_conn Conn);
 dbi_result dbi_conn_get_db_list(dbi_conn Conn, const char *pattern);
 dbi_result dbi_conn_get_table_list(dbi_conn Conn, const char *db, const char *pattern);
 dbi_result dbi_conn_query(dbi_conn Conn, const char *statement); 
-dbi_result dbi_conn_queryf(dbi_conn Conn, const char *formatstr, ...);
+dbi_result dbi_conn_queryf(dbi_conn Conn, const char *formatstr, ...) __attribute__ ((format (printf, 2, 3)));
 dbi_result dbi_conn_query_null(dbi_conn Conn, const unsigned char *statement, size_t st_length); 
 int dbi_conn_select_db(dbi_conn Conn, const char *db);
 unsigned long long dbi_conn_sequence_last(dbi_conn Conn, const char *name); /* name of the sequence or table */
