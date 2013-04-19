@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * $Id: dbi_main.c,v 1.103 2013/01/24 22:10:18 mhoenicka Exp $
+ * $Id: dbi_main.c,v 1.104 2013/04/19 00:00:43 mhoenicka Exp $
  */
 
 /* silence the deprecated warnings as this lib must implement and call
@@ -138,8 +138,6 @@ static int _safe_dlclose(dbi_driver_t *driver);
 void _error_handler(dbi_conn_t *conn, dbi_error_flag errflag);
 extern int _disjoin_from_conn(dbi_result_t *result);
 
-dbi_result dbi_conn_queryf(dbi_conn Conn, const char *formatstr, ...) __attribute__ ((format (printf, 2, 3)));
-int dbi_conn_set_error(dbi_conn Conn, int errnum, const char *formatstr, ...) __attribute__ ((format (printf, 3, 4)));
 
 /* must not be called "ERROR" due to a name clash on Windoze */
 static const char *my_ERROR = "ERROR";
