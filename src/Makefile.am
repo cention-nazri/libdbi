@@ -1,7 +1,3 @@
-## Process this file with automake to produce Makefile.in
-
-AUTOMAKE_OPTIONS = foreign
-
 LIBS = -lm
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/include
 

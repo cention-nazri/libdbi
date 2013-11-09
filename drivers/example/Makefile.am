@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = foreign
-
 if HAVE_EXAMPLE
 
 # don't use docdir, doc_DATA. This way we keep the HTML in separate subdirs
