@@ -415,6 +415,9 @@ time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
 
 size_t _dirent_buf_size(DIR * dirp)
 {
+#ifdef __MINGW32__
+    return 0;
+#else
     long name_max;
     size_t name_end;
 #   if defined(HAVE_FPATHCONF) && defined(HAVE_DIRFD) \
@@ -436,6 +439,7 @@ size_t _dirent_buf_size(DIR * dirp)
     name_end = (size_t)offsetof(struct dirent, d_name) + name_max + 1;
     return (name_end > sizeof(struct dirent)
             ? name_end : sizeof(struct dirent));
+#endif
 }
 
 

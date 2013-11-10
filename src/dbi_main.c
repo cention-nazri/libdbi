@@ -63,6 +63,7 @@ void *win_dlopen(const char*, int);
 void *win_dlsym(void *, const char*);
 int win_dlclose(void *);
 char *win_dlerror();
+#define readdir_r(s1,s2,s3) ({ *(s3) = readdir(s1); errno; })
 /* just for compiling support,if anyone has used these masks in code. The MODE argument to `dlopen' contains one of the following: */
 #define RTLD_LAZY       0x001   /* Lazy function call binding.  */
 #define RTLD_NOW        0x002   /* Immediate function call binding.  */

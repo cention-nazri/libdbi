@@ -25,6 +25,9 @@
 #endif
 
 #include <time.h>
+#ifdef __MINGW32__
+#define gmtime_r(s1,s2) gmtime(s1)
+#endif
 
 #ifndef HAVE_TIMEGM
 

@@ -41,8 +41,13 @@
 #include <dbi/dbi-dev.h>
 
 #ifdef __MINGW32__
-#warning "Using the thread-unsafe strtok function!"
+/*
+ * Per MSDN documentation, the buffers used by the MS C runtime are
+ * thread-local.
+ * (mingw-w64's pthread.h would also just add a forward strtok_r -> strtok)
+ */
 #define strtok_r(s1,s2,s3) strtok(s1,s2)
+#define gmtime_r(s1,s2) gmtime(s1)
 #endif
 
 // cast the opaque parameter to our struct pointer
