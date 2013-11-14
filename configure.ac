@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.61)
 AC_INIT([libdbi], [0.9.0])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([src/dbi_main.c])
 AC_USE_SYSTEM_EXTENSIONS
 AM_MAINTAINER_MODE
