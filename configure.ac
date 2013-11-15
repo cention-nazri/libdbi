@@ -34,9 +34,6 @@ AC_SUBST(LIBDBI_PATCH)
 
 AC_CANONICAL_HOST
 
-driverdir=$libdir/dbd
-AC_SUBST(driverdir)
-
 dnl ====================================
 dnl Fix CFLAGS to avoid the default -g option
 dnl CFLAGS will still be picked up from the environment
@@ -182,6 +179,11 @@ AC_ARG_WITH(shlib-ext,
 AC_ARG_WITH(dlsym-prefix,
 	[  --with-dlsym-prefix	  Specifies a required prefix for symbol names of dynamically loaded modules (usually not necessary).],
 	[  dlsym_prefix=$withval ])
+AC_ARG_WITH([driverdir], AS_HELP_STRING([--with-driverdir=PATH],
+	[Path to look in for libdbi plugins [[LIBDIR/dbd]]]),
+	[driverdir="$withval"], [driverdir='${libdir}/dbd'])
+AC_SUBST([driverdir])
+
 
 AC_DEFINE_UNQUOTED(DRIVER_EXT, "$shlib_ext", [ Specifies the filename extension of loadable modules ])
 AC_DEFINE_UNQUOTED(DLSYM_PREFIX, "$dlsym_prefix", [ Specifies a required prefix for symbol names of dynamically loaded modules ])
