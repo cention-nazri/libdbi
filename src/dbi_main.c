@@ -189,7 +189,7 @@ int dbi_initialize_r(const char *driverdir, dbi_inst *pInst) {
 		  return -1;
 		}
 
-		buffer = (struct dirent *) malloc (buffer_size);
+		buffer = malloc(buffer_size);
 		if (buffer == NULL) {
 		  return -1;
 		}
