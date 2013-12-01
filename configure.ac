@@ -214,8 +214,17 @@ AC_ARG_ENABLE(docs,
 
 if test "$ac_docs" = "YES"; then
       docs_subdirs="doc"
+      AC_PATH_PROGS(myjade, openjade jade, none)
+      AC_PATH_PROG(mypdftex, pdftex, none)
 else
    docs_subdirs=""
+fi
+
+if test "$myjade" = "none"; then
+   AC_MSG_ERROR(cannot build docs without openjade or jade)
+fi
+if test "$mypdftex" = "none"; then
+   AC_MSG_ERROR(cannot build docs without pdftex)
 fi
 
 AC_SUBST(docs_subdirs)
