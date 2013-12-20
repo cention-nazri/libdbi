@@ -415,8 +415,8 @@ time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
 
 size_t _dirent_buf_size(DIR * dirp)
 {
-#ifdef __MINGW32__
-    return 0;
+#ifdef _WIN32
+    return 1;
 #else
     long name_max;
     size_t name_end;
