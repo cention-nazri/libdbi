@@ -1322,6 +1322,52 @@ int dbi_conn_release_savepoint(dbi_conn Conn, const char *savepoint) {
 
 /* XXX INTERNAL PRIVATE IMPLEMENTATION FUNCTIONS XXX */
 
+static int _dbi_driver_load_symbols(void *dlhandle, dbi_driver_t *driver)
+{
+#define E(ptr, name) \
+	do { \
+		f->ptr = my_dlsym(dlhandle, DLSYM_PREFIX name); \
+		if (f->ptr == NULL) \
+			return -1; \
+	} while (0)
+
+	dbi_functions_t *f = driver->functions;
+
+	E(register_driver, "dbd_register_driver");
+	E(initialize, "dbd_initialize");
+	E(finalize, "dbd_finalize");
+	E(connect, "dbd_connect");
+	E(disconnect, "dbd_disconnect");
+	E(fetch_row, "dbd_fetch_row");
+	E(free_query, "dbd_free_query");
+	E(goto_row, "dbd_goto_row");
+	E(get_socket, "dbd_get_socket");
+	E(get_encoding, "dbd_get_encoding");
+	E(encoding_from_iana, "dbd_encoding_from_iana");
+	E(encoding_to_iana, "dbd_encoding_to_iana");
+	E(get_engine_version, "dbd_get_engine_version");
+	E(list_dbs, "dbd_list_dbs");
+	E(list_tables, "dbd_list_tables");
+	E(query, "dbd_query");
+	E(query_null, "dbd_query_null");
+	E(transaction_begin, "dbd_transaction_begin");
+	E(transaction_commit, "dbd_transaction_commit");
+	E(transaction_rollback, "dbd_transaction_rollback");
+	E(savepoint, "dbd_savepoint");
+	E(rollback_to_savepoint, "dbd_rollback_to_savepoint");
+	E(release_savepoint, "dbd_release_savepoint");
+	E(quote_string, "dbd_quote_string");
+	E(quote_binary, "dbd_quote_binary");
+	E(conn_quote_string, "dbd_conn_quote_string");
+	E(select_db, "dbd_select_db");
+	E(geterror, "dbd_geterror");
+	E(get_seq_last, "dbd_get_seq_last");
+	E(get_seq_next, "dbd_get_seq_next");
+	E(ping, "dbd_ping");
+	return 0;
+#undef E
+}
+
 static dbi_driver_t *_get_driver(const char *filename, dbi_inst_t *inst) {
 	dbi_driver_t *driver;
 	void *dlhandle;
@@ -1349,40 +1395,10 @@ static dbi_driver_t *_get_driver(const char *filename, dbi_inst_t *inst) {
 		driver->caps = NULL;
 		driver->functions = malloc(sizeof(dbi_functions_t));
 
-		if ( /* nasty looking if block... is there a better way to do it? */
-			((driver->functions->register_driver = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_register_driver")) == NULL) ||
-			((driver->functions->initialize = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_initialize")) == NULL) ||
-			((driver->functions->finalize = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_finalize")) == NULL) ||
-			((driver->functions->connect = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_connect")) == NULL) ||
-			((driver->functions->disconnect = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_disconnect")) == NULL) ||
-			((driver->functions->fetch_row = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_fetch_row")) == NULL) ||
-			((driver->functions->free_query = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_free_query")) == NULL) ||
-			((driver->functions->goto_row = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_goto_row")) == NULL) ||
-			((driver->functions->get_socket = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_get_socket")) == NULL) ||
-			((driver->functions->get_encoding = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_get_encoding")) == NULL) ||
-			((driver->functions->encoding_from_iana = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_encoding_from_iana")) == NULL) ||
-			((driver->functions->encoding_to_iana = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_encoding_to_iana")) == NULL) ||
-			((driver->functions->get_engine_version = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_get_engine_version")) == NULL) ||
-			((driver->functions->list_dbs = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_list_dbs")) == NULL) ||
-			((driver->functions->list_tables = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_list_tables")) == NULL) ||
-			((driver->functions->query = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_query")) == NULL) ||
-			((driver->functions->query_null = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_query_null")) == NULL) ||
-			((driver->functions->transaction_begin = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_transaction_begin")) == NULL) ||
-			((driver->functions->transaction_commit = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_transaction_commit")) == NULL) ||
-			((driver->functions->transaction_rollback = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_transaction_rollback")) == NULL) ||
-			((driver->functions->savepoint = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_savepoint")) == NULL) ||
-			((driver->functions->rollback_to_savepoint = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_rollback_to_savepoint")) == NULL) ||
-			((driver->functions->release_savepoint = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_release_savepoint")) == NULL) ||
-			((driver->functions->quote_string = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_quote_string")) == NULL) ||
-			((driver->functions->quote_binary = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_quote_binary")) == NULL) ||
-			((driver->functions->conn_quote_string = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_conn_quote_string")) == NULL) ||
-			((driver->functions->select_db = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_select_db")) == NULL) ||
-			((driver->functions->geterror = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_geterror")) == NULL) ||
-			((driver->functions->get_seq_last = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_get_seq_last")) == NULL) ||
-			((driver->functions->get_seq_next = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_get_seq_next")) == NULL) ||
-			((driver->functions->ping = my_dlsym(dlhandle, DLSYM_PREFIX "dbd_ping")) == NULL)
-			)
-		{
+		if (_dbi_driver_load_symbols(dlhandle, driver) != 0) {
+			fprintf(stderr, "libdbi error: driver %s "
+			        "did not define all required methods\n",
+			        driver->filename);
 			free(driver->functions);
 			free(driver->filename);
 			free(driver);
