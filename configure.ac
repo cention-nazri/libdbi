@@ -4,7 +4,6 @@ AC_INIT([libdbi], [0.9.0])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([src/dbi_main.c])
 AC_USE_SYSTEM_EXTENSIONS
-AM_MAINTAINER_MODE
 
 dnl set up libtool library versioning
 LIB_CURRENT=2
