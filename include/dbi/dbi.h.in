@@ -100,6 +100,10 @@ typedef struct {
 	dbi_time time;
 } dbi_datetime;
 
+typedef struct {
+	struct tm tm;
+	int utc_offset;
+} dbi_datetimex;
 
 /* function callback definitions */
 typedef void (*dbi_conn_error_handler_func)(dbi_conn, void *);
@@ -303,6 +307,7 @@ char *dbi_result_get_string_copy(dbi_result Result, const char *fieldname);
 unsigned char *dbi_result_get_binary_copy(dbi_result Result, const char *fieldname);
 
 time_t dbi_result_get_datetime(dbi_result Result, const char *fieldname);
+const dbi_datetimex *dbi_result_get_datetimex(dbi_result Result, const char *fieldname);
 
 int dbi_result_bind_char(dbi_result Result, const char *fieldname, char *bindto);
 int dbi_result_bind_uchar(dbi_result Result, const char *fieldname, unsigned char *bindto);
@@ -349,6 +354,7 @@ char *dbi_result_get_string_copy_idx(dbi_result Result, unsigned int fieldidx);
 unsigned char *dbi_result_get_binary_copy_idx(dbi_result Result, unsigned int fieldidx);
 
 time_t dbi_result_get_datetime_idx(dbi_result Result, unsigned int fieldidx);
+const dbi_datetimex *dbi_result_get_datetimex_idx(dbi_result Result, unsigned int fieldidx);
 
 /* get_as* functions */
 long long dbi_result_get_as_longlong(dbi_result Result, const char *fieldname);

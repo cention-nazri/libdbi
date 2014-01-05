@@ -994,28 +994,32 @@ published by the Free Software Foundation.
 	  </VarListEntry>
 	</VariableList>
       </section>
-      <section id="internal-dbd-parse-datetime" xreflabel="_dbd_parse_datetime">
-	<title>_dbd_parse_datetime</title>
+      <section id="internal-dbd-parse-datetimex" xreflabel="_dbd_parse_datetimex">
+	<title>_dbd_parse_datetimex</title>
 	<funcsynopsis>
 	  <funcprototype>
-	    <funcdef>time_t <function moreinfo="none">_dbd_parse_datetime</function></funcdef>
+	    <funcdef>int <function moreinfo="none">_dbd_parse_datetimex</function></funcdef>
 	    <paramdef>const char *<parameter moreinfo="none">raw</parameter></paramdef>
 	    <paramdef>unsigned int <parameter moreinfo="none">attribs</parameter></paramdef>
+	    <paramdef>dbi_datetimex *<parameter moreinfo="none">dtx</parameter></paramdef>
 	  </funcprototype>
 	</funcsynopsis>
-	<para>Parses the input time, date, or datetime string and converts the value into a time_t value.</para>
+	<para>Parses the input time, date, or datetime string into a
+	dbi_datetimex, the latter of which groups a struct tm and a timezone
+	offset.</para>
 	<VariableList>
 	  <VarListEntry>
 	    <Term>Arguments</Term>
 	    <ListItem>
 	      <para><literal moreinfo="none">raw</literal>: A zero-terminated string containing a time, date, or datetime value. Accepted formats are YYYY-MM-DD for date values, HH:MM:SS for time values, and YYYY-MM-DD HH:MM:SS for datetime values. The separators must be present, but can be any character.</para>
 	      <Para><Literal>attribs</Literal>: The field attributes of raw.</Para>
+	      <Para><Literal>dtx</Literal>: a dbi_datetimex structure to fill in.</Para>
 	    </ListItem>
 	  </VarListEntry>
 	  <varlistentry>
 	    <term><emphasis>Returns</emphasis></term>
 	    <listitem>
-	      <para>The numeric equivalent of the input based on UTC. In case of an error, this function returns the start of the Unix epoch.</para>
+	      <para>Always zero.</para>
 	    </listitem>
 	  </varlistentry>
 	</VariableList>

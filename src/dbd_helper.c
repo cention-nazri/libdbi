@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 #ifdef HAVE_UNISTD_H
   #include <unistd.h>
 #endif
@@ -299,8 +300,10 @@ static _capability_t *_find_or_create_conn_cap(dbi_conn_t *conn, const char *cap
 	return cap;
 }
 
-time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
-	struct tm unixtime;
+int _dbd_parse_datetimex(const char *raw, unsigned int attribs,
+                         dbi_datetimex *dtx)
+{
+	struct tm *unixtime = &dtx->tm;
 	char *unparsed;
 	char *cur;
 
@@ -311,11 +314,11 @@ time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
 
 	int check_time = 1;
 
-	unixtime.tm_sec = unixtime.tm_min = unixtime.tm_hour = 0;
-	unixtime.tm_mday = 1; /* days are 1 through 31 */
-	unixtime.tm_mon = 0;
-	unixtime.tm_year = 70; /* can't start before Unix epoch */
-	unixtime.tm_isdst = -1;
+	unixtime->tm_sec = unixtime->tm_min = unixtime->tm_hour = 0;
+	unixtime->tm_mday = 1; /* days are 1 through 31 */
+	unixtime->tm_mon = 0;
+	unixtime->tm_year = 70; /* can't start before Unix epoch */
+	unixtime->tm_isdst = -1;
 	
 	if (raw && (unparsed = strdup(raw)) != NULL) {
 	  cur = unparsed;
@@ -336,9 +339,9 @@ time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
 	    cur[4] = '\0';
 	    cur[7] = '\0';
 	    cur[10] = '\0';
-	    unixtime.tm_year = atoi(cur)-1900;
-	    unixtime.tm_mon = atoi(cur+5)-1; /* months are 0 through 11 */
-	    unixtime.tm_mday = atoi(cur+8);
+	    unixtime->tm_year = atoi(cur)-1900;
+	    unixtime->tm_mon = atoi(cur+5)-1; /* months are 0 through 11 */
+	    unixtime->tm_mday = atoi(cur+8);
 	    if (attribs & DBI_DATETIME_TIME) {
 	      cur += 11;
 	      if (*cur == ' ') {
@@ -350,9 +353,9 @@ time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
 	  if (check_time && strlen(cur) > 7 && attribs & DBI_DATETIME_TIME) {
 	    cur[2] = '\0';
 	    cur[5] = '\0';
-	    unixtime.tm_hour = atoi(cur);
-	    unixtime.tm_min = atoi(cur+3);
-	    unixtime.tm_sec = atoi(cur+6);
+	    unixtime->tm_hour = atoi(cur);
+	    unixtime->tm_min = atoi(cur+3);
+	    unixtime->tm_sec = atoi(cur+6);
 
 	    /* check for a timezone suffix */
 	    cur += 8;
@@ -394,18 +397,16 @@ time_t _dbd_parse_datetime(const char *raw, unsigned int attribs) {
 	        _gm_offset += _tz_hours * 60 * 60;
 	        _gm_offset += _tz_mins * 60;
 
-	        if ( _tz_dir ) {
+	        if (!_tz_dir)
 	          _gm_offset *= -1;
-	        }
 	      }
 	    }
 	  }
 
 	  free(unparsed);
 	}
-
-	/* output is UTC, not local time */
-	return (time_t)(_gm_offset + timegm(&unixtime));
+	dtx->utc_offset = _gm_offset;
+	return 0;
 }
 
 /* Calculate the required buffer size (in bytes) for directory       *

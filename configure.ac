@@ -6,9 +6,9 @@ AC_CONFIG_SRCDIR([src/dbi_main.c])
 AC_USE_SYSTEM_EXTENSIONS
 
 dnl set up libtool library versioning
-LIB_CURRENT=2
+LIB_CURRENT=3
 LIB_REVISION=0
-LIB_AGE=1
+LIB_AGE=0
 
 dnl set up libdbi versioning from the above interface version numbers
 dnl the math contains an ugly hack to massage the minor version number

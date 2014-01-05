@@ -1,4 +1,4 @@
-ABI_2 {
+ABI_3 {
 global:
 	dbi_conn_cap_get;
 	dbi_conn_clear_option;
@@ -104,6 +104,8 @@ global:
 	dbi_result_get_currow;
 	dbi_result_get_datetime;
 	dbi_result_get_datetime_idx;
+	dbi_result_get_datetimex;
+	dbi_result_get_datetimex_idx;
 	dbi_result_get_double;
 	dbi_result_get_double_idx;
 	dbi_result_get_field_attrib;
@@ -163,7 +165,7 @@ global:
 	_dbd_encode_binary;
 	_dbd_escape_chars;
 	_dbd_internal_error_handler;
-	_dbd_parse_datetime;
+	_dbd_parse_datetimex;
 	_dbd_register_conn_cap;
 	_dbd_register_driver_cap;
 	_dbd_result_add_field;
