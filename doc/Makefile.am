@@ -1,4 +1,3 @@
-docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 progguidedir = $(docdir)/programmers-guide
 driverguidedir = $(docdir)/driver-guide
 
