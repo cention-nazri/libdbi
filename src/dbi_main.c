@@ -587,7 +587,14 @@ int dbi_conn_disjoin_results(dbi_conn Conn) {
 void dbi_conn_close(dbi_conn Conn) {
 	dbi_conn_t *conn = Conn;
 	
-	if (!conn || !(conn->connection)) return;
+	if (!conn) {
+	  return;
+	}
+
+	if (!(conn->connection)) {
+	  free(conn);
+	  return;
+	}
 	
 	_update_internal_conn_list(conn, -1);
 	
