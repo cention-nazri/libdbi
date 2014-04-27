@@ -606,6 +606,12 @@ size_t _dbd_encode_binary(const unsigned char *in, size_t n, unsigned char *out)
 size_t _dbd_decode_binary(const unsigned char *in, unsigned char *out){
   int i, e;
   unsigned char c;
+
+  if (in == NULL
+      || *in == NULL) {
+    return (size_t)0;
+  }
+
   e = *(in++);
   i = 0;
   while( (c = *(in++))!=0 ){
