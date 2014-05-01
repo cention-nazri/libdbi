@@ -71,7 +71,14 @@ typedef struct dbi_result_s {
 
 	enum { NOTHING_RETURNED, ROWS_RETURNED } result_state;
 	dbi_row_t **rows; /* array of filled rows, elements set to NULL if not fetched yet */
+
+	/* Current row pointer index (1-based) for DBI. */
 	unsigned long long currowidx;
+	/*
+	 * Current row pointer index (1-based) that is synchronized to what
+	 * the current pointer inside the DBD.
+	 */
+	unsigned long long dbd_currowidx;
 } dbi_result_t;
 
 typedef struct _field_binding_s {

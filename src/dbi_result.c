@@ -108,7 +108,7 @@ int dbi_result_seek_row(dbi_result Result, unsigned long long rowidx) {
   }
 	
   /* row is one-based for the user, but zero-based to the dbd conn */
-  retval = RESULT->conn->driver->functions->goto_row(RESULT, rowidx-1, RESULT->currowidx-1);
+  retval = RESULT->conn->driver->functions->goto_row(RESULT, rowidx-1, RESULT->dbd_currowidx-1);
   if (retval == -1) {
     _error_handler(RESULT->conn, DBI_ERROR_DBD);
     return 0;
@@ -120,6 +120,7 @@ int dbi_result_seek_row(dbi_result Result, unsigned long long rowidx) {
   }
 
   RESULT->currowidx = rowidx;
+  RESULT->dbd_currowidx = rowidx;
   _activate_bindings(RESULT);
   return retval;
 }
@@ -1789,8 +1790,6 @@ static unsigned int _find_field(dbi_result_t *result, const char *fieldname, dbi
 }
 
 static int _is_row_fetched(dbi_result_t *result, unsigned long long row) {
-  /* Bull patch reported by Tom Lane */
-  /*  if (!result->rows || (row >= result->numrows_matched)) return -1; */
   if (!result->rows || (row > result->numrows_matched)) return -1;
   return !(result->rows[row] == NULL);
 }

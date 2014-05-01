@@ -78,6 +78,7 @@ dbi_result_t *_dbd_result_create(dbi_conn_t *conn, void *handle, unsigned long l
 	result->field_types = NULL;
 	result->field_attribs = NULL;
 	result->result_state = (numrows_matched > 0) ? ROWS_RETURNED : NOTHING_RETURNED;
+	/* result->rows[0] is intentionally unused; rows are in [1..n] */
 	result->rows = calloc(numrows_matched+1, sizeof(dbi_row_t *));
 	result->currowidx = 0;
 
