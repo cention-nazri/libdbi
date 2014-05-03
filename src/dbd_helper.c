@@ -607,8 +607,7 @@ size_t _dbd_decode_binary(const unsigned char *in, unsigned char *out){
   int i, e;
   unsigned char c;
 
-  if (in == NULL
-      || *in == NULL) {
+  if (in == NULL || *in == '\0') {
     return (size_t)0;
   }
 
