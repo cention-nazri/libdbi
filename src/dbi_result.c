@@ -26,6 +26,7 @@
 #include <config.h>
 #endif
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -1091,7 +1092,7 @@ float dbi_result_get_float_idx(dbi_result Result, unsigned int fieldidx) {
     return my_ERROR;
   }
   if (RESULT->field_types[fieldidx] == DBI_TYPE_XDECIMAL)
-    return strtod(RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string, NULL);
+    return dbi_result_get_double_idx(Result, fieldidx);
   if (RESULT->field_types[fieldidx] != DBI_TYPE_DECIMAL) {
     _verbose_handler(RESULT->conn, "%s: field `%s` is not float type\n",
                      __func__, dbi_result_get_field_name(Result, fieldidx+1));
@@ -1137,8 +1138,25 @@ double dbi_result_get_double_idx(dbi_result Result, unsigned int fieldidx) {
     _error_handler(RESULT->conn, DBI_ERROR_BADIDX);
     return my_ERROR;
   }
-  if (RESULT->field_types[fieldidx] == DBI_TYPE_XDECIMAL)
-    return strtod(RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string, NULL);
+  if (RESULT->field_types[fieldidx] == DBI_TYPE_XDECIMAL) {
+	const char *s = RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string;
+	double v = 0, xpow;
+	if (s == NULL)
+		return 0;
+	for (; isdigit(*s); ++s) {
+		v *= 10;
+		v += *s - '0';
+	}
+	if (*s++ != '.')
+		/* I hear SQL mandates the dot as a separator */
+		return v;
+	xpow = 0.1;
+	for (; isdigit(*s); ++s) {
+		v += (*s - '0') * xpow;
+		xpow /= 10;
+	}
+	return v;
+  }
   if (RESULT->field_types[fieldidx] != DBI_TYPE_DECIMAL) {
     _verbose_handler(RESULT->conn, "%s: field `%s` is not double type\n",
                      __func__, dbi_result_get_field_name(Result, fieldidx+1));
