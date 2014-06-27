@@ -5,3 +5,5 @@ includeexecdir = $(prefix)/include/dbi
 includeexec_HEADERS = dbi.h dbi-dev.h dbd.h
 
 EXTRA_DIST = dbi.h.in
+
+config.status: dbi.h.in
