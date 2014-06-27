@@ -122,6 +122,7 @@ typedef void (*dbi_conn_error_handler_func)(dbi_conn, void *);
 #define DBI_TYPE_STRING 3
 #define DBI_TYPE_BINARY 4
 #define DBI_TYPE_DATETIME 5
+#define DBI_TYPE_XDECIMAL 6 /* exact decimal (as string) */
 
 /* values for the bitmask in field_type_attributes[] */
 #define DBI_INTEGER_UNSIGNED	(1 << 0)

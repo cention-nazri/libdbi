@@ -652,8 +652,9 @@ static void _free_result_rows(dbi_result_t *result) {
     if (!result->rows[rowidx]) continue;
 			
     for (fieldidx = 0; fieldidx < result->numfields; fieldidx++) {
-      if ((result->field_types[fieldidx] == DBI_TYPE_STRING
-        || result->field_types[fieldidx] == DBI_TYPE_BINARY) 
+      if ((result->field_types[fieldidx] == DBI_TYPE_STRING ||
+           result->field_types[fieldidx] == DBI_TYPE_XDECIMAL ||
+           result->field_types[fieldidx] == DBI_TYPE_BINARY) 
         && result->rows[rowidx]->field_values[fieldidx].d_string)
       {
         free(result->rows[rowidx]->field_values[fieldidx].d_string);
@@ -1089,6 +1090,8 @@ float dbi_result_get_float_idx(dbi_result Result, unsigned int fieldidx) {
     _error_handler(RESULT->conn, DBI_ERROR_BADIDX);
     return my_ERROR;
   }
+  if (RESULT->field_types[fieldidx] == DBI_TYPE_XDECIMAL)
+    return strtod(RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string, NULL);
   if (RESULT->field_types[fieldidx] != DBI_TYPE_DECIMAL) {
     _verbose_handler(RESULT->conn, "%s: field `%s` is not float type\n",
                      __func__, dbi_result_get_field_name(Result, fieldidx+1));
@@ -1134,6 +1137,8 @@ double dbi_result_get_double_idx(dbi_result Result, unsigned int fieldidx) {
     _error_handler(RESULT->conn, DBI_ERROR_BADIDX);
     return my_ERROR;
   }
+  if (RESULT->field_types[fieldidx] == DBI_TYPE_XDECIMAL)
+    return strtod(RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string, NULL);
   if (RESULT->field_types[fieldidx] != DBI_TYPE_DECIMAL) {
     _verbose_handler(RESULT->conn, "%s: field `%s` is not double type\n",
                      __func__, dbi_result_get_field_name(Result, fieldidx+1));
@@ -1180,7 +1185,8 @@ const char *dbi_result_get_string_idx(dbi_result Result, unsigned int fieldidx) 
     return my_ERROR;
   }
 
-  if (RESULT->field_types[fieldidx] != DBI_TYPE_STRING) {
+  if (RESULT->field_types[fieldidx] != DBI_TYPE_STRING &&
+      RESULT->field_types[fieldidx] != DBI_TYPE_XDECIMAL) {
     dbi_conn_t *conn = RESULT->conn;
     _verbose_handler(conn, "%s: field `%s` is not string type\n",
                      __func__, dbi_result_get_field_name(Result, fieldidx+1));
@@ -1263,7 +1269,8 @@ char *dbi_result_get_string_copy_idx(dbi_result Result, unsigned int fieldidx) {
     _error_handler(RESULT->conn, DBI_ERROR_BADIDX);
     return strdup(my_ERROR);
   }
-  if (RESULT->field_types[fieldidx] != DBI_TYPE_STRING) {
+  if (RESULT->field_types[fieldidx] != DBI_TYPE_STRING &&
+      RESULT->field_types[fieldidx] != DBI_TYPE_XDECIMAL) {
     _verbose_handler(RESULT->conn, "%s: field `%s` is not string type\n",
                      __func__, dbi_result_get_field_name(Result, fieldidx+1));
     _error_handler(RESULT->conn, DBI_ERROR_BADTYPE);
@@ -1472,6 +1479,7 @@ long long dbi_result_get_as_longlong_idx(dbi_result Result, unsigned int fieldid
       return my_ERROR;
     }
   case DBI_TYPE_STRING:
+  case DBI_TYPE_XDECIMAL:
     if (RESULT->rows[RESULT->currowidx]->field_sizes[fieldidx] == 0
 	&& RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string == NULL) {
       /* string does not exist */
@@ -1575,6 +1583,7 @@ char *dbi_result_get_as_string_copy_idx(dbi_result Result, unsigned int fieldidx
     }
     break;
   case DBI_TYPE_STRING:
+  case DBI_TYPE_XDECIMAL:
     if (RESULT->rows[RESULT->currowidx]->field_sizes[fieldidx] == 0
 	&& RESULT->rows[RESULT->currowidx]->field_values[fieldidx].d_string == NULL) {
       /* string does not exist */
