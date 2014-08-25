@@ -295,7 +295,14 @@ void _translate_example_type(enum enum_field_types fieldtype, unsigned short *ty
     _attribs |= DBI_DATETIME_TIME;
     break;
 			
-  case FIELD_TYPE_DECIMAL: /* decimal is actually a string, has arbitrary precision, no floating point rounding */
+  case FIELD_TYPE_DECIMAL:
+    /*
+     * Decimal is actually a string, has arbitrary precision, no
+     * floating point rounding. But we need a way to distinguish it
+     * from real strings, so here goes.
+     */
+    _type = DBI_TYPE_XDECIMAL;
+    break;
   case FIELD_TYPE_ENUM:
   case FIELD_TYPE_SET:
   case FIELD_TYPE_VAR_STRING:
