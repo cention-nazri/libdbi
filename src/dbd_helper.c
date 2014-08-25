@@ -81,6 +81,7 @@ dbi_result_t *_dbd_result_create(dbi_conn_t *conn, void *handle, unsigned long l
 	/* result->rows[0] is intentionally unused; rows are in [1..n] */
 	result->rows = calloc(numrows_matched+1, sizeof(dbi_row_t *));
 	result->currowidx = 0;
+	result->dbd_currowidx = 0;
 
 	if (!_dbd_result_add_to_conn(result)) {
 		dbi_result_free((dbi_result)result);
